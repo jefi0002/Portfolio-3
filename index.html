@@ -8,6 +8,97 @@
     <title>Guess My Number!</title>
 </head>
 <body>
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    const ctx = confettiCanvas.getContext("2d");
+
+    let confettiArray = [];
+    const colors = ["#f94144", "#f3722c", "#f8961e", "#f9844a", "#f9c74f", "#90be6d", "#43aa8b", "#577590"];
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+
+    // Confetti class to create individual confetti pieces
+    class Confetti {
+        constructor(x, y, size, speedX, speedY, color) {
+            this.x = x;
+            this.y = y;
+            this.size = size;
+            this.speedX = speedX;
+            this.speedY = speedY;
+            this.color = color;
+        }
+
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            if (this.y > confettiCanvas.height) {
+                this.y = 0;
+                this.x = Math.random() * confettiCanvas.width;
+            }
+
+            if (this.x > confettiCanvas.width || this.x < 0) {
+                this.speedX = -this.speedX;
+            }
+        }
+
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.size, this.size);
+        }
+    }
+
+    // Function to generate random confetti
+    function generateConfetti() {
+        const size = Math.random() * 10 + 5;
+        const x = Math.random() * confettiCanvas.width;
+        const y = Math.random() * confettiCanvas.height;
+        const speedX = Math.random() * 2 - 1;
+        const speedY = Math.random() * 3 + 1;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        confettiArray.push(new Confetti(x, y, size, speedX, speedY, color));
+    }
+
+    // Populate confetti array
+    for (let i = 0; i < 150; i++) {
+        generateConfetti();
+    }
+
+    // Animation loop to render confetti
+    function animateConfetti() {
+        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+        confettiArray.forEach((confetti) => {
+            confetti.update();
+            confetti.draw();
+        });
+
+        requestAnimationFrame(animateConfetti);
+    }
+
+    // Start confetti animation
+    const start = () => {
+        animateConfetti();
+    };
+
+    // Stop confetti animation after 5 seconds
+    const stop = () => {
+        setTimeout(() => {
+            confettiArray = [];  // Clear confetti array to stop animation
+            ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }, 15000);
+    };
+
+    // Start confetti animation when the page loads
+    start();
+
+    // Stop confetti after 5 seconds
+    stop();
+
+</script>
 <header>
     <h1>Guess My Number!</h1>
     <p class="between">(Between 1 and 20)</p>
@@ -21,12 +112,13 @@
     </section>
     <section class="right">
         <p class="message">Start guessing...</p>
-        <p class="label-score">💯 Score: <span class="score">20</span></p>
+        <p class="label-score">💯 Score: <span class="score">0</span></p>
         <p class="label-highscore">
             🥇 Highscore: <span class="highscore">0</span>
+        <p class="history">Guess History:</p>
         </p>
     </section>
 </main>
-<script src="script.js"></script>
+<script src="index.js"></script>
 </body>
 </html>
